@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Français - Écoute et Écriture</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #87CEEB, #ffffff);
+      color: #000;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    header h2 {
+      margin: 5px 0 0;
+      font-weight: normal;
+    }
+    .content {
+      padding: 30px;
+    }
+    .phrase-list {
+      margin-bottom: 30px;
+      background-color: #e6f0fa;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #003366;
+    }
+    .phrase-item {
+      margin: 10px 0;
+    }
+    .phrase-item button {
+      margin-left: 10px;
+    }
+    .translation {
+      color: gray;
+    }
+    .exercise {
+      margin-top: 40px;
+      padding: 20px;
+      border: 2px solid #003366;
+      border-radius: 10px;
+      background-color: #e6f0fa;
+    }
+    .exercise h3 {
+      margin-top: 0;
+    }
+    .exercise textarea {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1em;
+    }
+    .exercise button {
+      padding: 10px 20px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .exercise button:hover {
+      background-color: #005599;
+    }
+    .correction {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    .score {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #003366;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>International Maarif Schools of Ethiopia - CMC Branch</h1>
+    <h2>Français</h2>
+  </header>
+
+  <div class="content">
+    <div class="phrase-list" id="phraseList">
+      <h3>Liste de phrases avec audio et traduction :</h3>
+    </div>
+
+    <div class="exercise">
+      <h3>Exercice d'écriture</h3>
+      <p>Écoute et écris la phrase que tu entends :</p>
+      <button onclick="playCurrentPhrase()">Écouter</button>
+      <textarea id="studentInput" placeholder="Écris ta réponse ici..."></textarea>
+      <button onclick="checkAnswer()">Corriger</button>
+      <button onclick="nextPhrase()">Suivant</button>
+      <div class="correction" id="correctionOutput"></div>
+      <div class="score" id="scoreDisplay">Score : 0</div>
+    </div>
+  </div>
+
+  <footer>
+    Mr. Mbambu Lumanisa Bikoni - French teacher
+  </footer>
+
+  <script>
+    const phrases = [
+      ["Je suis fatigué", "I am tired"],
+      ["Je suis malade", "I am sick"],
+      ["Je suis content", "I am happy"],
+      ["Je suis triste", "I am sad"],
+      ["Tu as mal où ?", "Where does it hurt?"],
+      ["J’ai mal à la tête.", "I have a headache."],
+      ["Il a mal au ventre.", "He has a stomachache."],
+      ["Elle a mal au bras.", "She has a sore arm."],
+      ["Tu peux te décrire ?", "Can you describe yourself?"],
+      ["J’ai une bouche rouge.", "I have a red mouth."],
+      ["Elle a des cheveux noirs.", "She has black hair."],
+      ["J’ai une oreille rose.", "I have a pink ear."],
+      ["Tu préfères le salé ou le sucré ?", "Do you prefer salty or sweet?"],
+      ["Je n’aime pas la viande.", "I don't like meat."],
+      ["J’aime beaucoup le fromage.", "I really like cheese."],
+      ["Elle n’aime pas les frites.", "She doesn't like fries."],
+      ["Tu as faim ?", "Are you hungry?"],
+      ["Qu’est-ce que tu veux manger ?", "What do you want to eat?"],
+      ["Je veux manger de la mangue", "I want to eat mango"],
+      ["Je mange du gâteau.", "I am eating cake."],
+      ["Tu as soif ?", "Are you thirsty?"],
+      ["Qu’est-ce que tu veux boire ?", "What do you want to drink?"],
+      ["Je vais boire de l’eau", "I will drink water"],
+      ["Je bois du jus.", "I am drinking juice."],
+      ["Voici mon assiette.", "Here is my plate."],
+      ["Il y a une cuillère et une fourchette.", "There is a spoon and a fork."],
+      ["Le couteau est sur la table.", "The knife is on the table."],
+      ["Ta mangue est salée.", "Your mango is salty."],
+      ["Je mets un pantalon bleu.", "I am wearing blue pants."],
+      ["Elle porte une jupe rouge.", "She is wearing a red skirt."],
+      ["Il a un tee-shirt vert.", "He has a green T-shirt."],
+      ["Tu as des chaussettes noires ?", "Do you have black socks?"],
+      ["J’aime ma casquette jaune.", "I like my yellow cap."],
+      ["Je porte des baskets blanches.", "I am wearing white sneakers."],
+      ["Elle a une robe violette.", "She has a purple dress."],
+      ["Il met un pull gris.", "He puts on a gray sweater."],
+      ["Je vais à l’école en bus.", "I go to school by bus."],
+      ["Je voyage en vélo", "I travel by bike"],
+      ["Je vais à l’église en voiture", "I go to church by car"],
+      ["Tu voyage à pied", "You travel on foot"],
+      ["Il voyage en train.", "He travels by train."],
+      ["Je vais à la mosquée en moto.", "I go to the mosque by motorcycle."],
+      ["Il fait froid", "It is cold"],
+      ["Il fait chaud aujourd’hui.", "It is hot today."],
+      ["Il y a du vent.", "It is windy."],
+      ["Il neige à Paris.", "It is snowing in Paris."],
+      ["Il pleut à Addis-Abeba.", "It is raining in Addis Ababa."],
+      ["Tu as une veste", "Do you have a jacket?"],
+      ["Mets ton chapeau !", "Put on your hat!"],
+      ["Elle enlève son pull.", "She takes off her sweater."],
+      ["Il change de vêtements.", "He changes clothes."],
+      ["Tu mange du riz", "You eat rice"],
+      ["Je mange de la pastèque.", "I eat watermelon."],
+      ["Bon appétit !", "Enjoy your meal!"],
+      ["À demain !", "See you tomorrow!"]
+    ];
+
+    let currentIndex = 0;
+    let score = 0;
+
+    window.onload = () => {
+      const listContainer = document.getElementById("phraseList");
+      phrases.forEach(([fr, en], index) => {
+        const div = document.createElement("div");
+        div.className = "phrase-item";
+        div.innerHTML = `<strong>${fr}</strong> <button onclick="speak('${fr}')">🔊</button><div class="translation">${en}</div>`;
+        listContainer.appendChild(div);
+      });
+    };
+
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'fr-FR';
+      speechSynthesis.speak(utterance);
+    }
+
+    function playCurrentPhrase() {
+      speak(phrases[currentIndex][0]);
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById("studentInput").value.trim().toLowerCase();
+      const expected = phrases[currentIndex][0].toLowerCase();
+      const isCorrect = userInput === expected;
+      const result = isCorrect ? "Bonne réponse !" : `Mauvaise réponse. La phrase correcte est : "${phrases[currentIndex][0]}"`;
+      if (isCorrect) score++;
+      document.getElementById("correctionOutput").textContent = result;
+      document.getElementById("scoreDisplay").textContent = `Score : ${score}`;
+    }
+
+    function nextPhrase() {
+      currentIndex = (currentIndex + 1) % phrases.length;
+      document.getElementById("studentInput").value = "";
+      document.getElementById("correctionOutput").textContent = "";
+      playCurrentPhrase();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Français - Écoute et Écriture</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #87CEEB, #ffffff);
+      color: #000;
+    }
+    header {
+      background-color: #003366;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+    }
+    header h2 {
+      margin: 5px 0 0;
+      font-weight: normal;
+    }
+    .content {
+      padding: 30px;
+    }
+    .word {
+      margin-bottom: 20px;
+    }
+    .word span.fr {
+      display: block;
+      font-size: 1.5em;
+    }
+    .word span.en {
+      color: grey;
+      font-size: 0.9em;
+    }
+    .listen-button {
+      margin-top: 5px;
+      padding: 5px 10px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .listen-button:hover {
+      background-color: #005599;
+    }
+    .exercise {
+      margin-top: 40px;
+      padding: 20px;
+      border: 2px solid #003366;
+      border-radius: 10px;
+      background-color: #e6f0fa;
+    }
+    .exercise h3 {
+      margin-top: 0;
+    }
+    .exercise textarea {
+      width: 100%;
+      height: 100px;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 1em;
+    }
+    .exercise button {
+      padding: 10px 20px;
+      background-color: #003366;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    .exercise button:hover {
+      background-color: #005599;
+    }
+    .correction {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      background-color: #003366;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>International Maarif Schools of Ethiopia - CMC Branch</h1>
+    <h2>Français</h2>
+  </header>
+
+  <div class="content" id="words"></div>
+
+  <div class="content exercise">
+    <h3>Exercice d'écriture</h3>
+    <p>Écoute et écris le mot que tu entends :</p>
+    <button onclick="playCurrentWord()">Écouter</button>
+    <textarea id="studentInput" placeholder="Écris ta réponse ici..."></textarea>
+    <button onclick="checkAnswer()">Corriger</button>
+    <button onclick="nextWord()">Suivant</button>
+    <div class="correction" id="correctionOutput"></div>
+  </div>
+
+  <footer>
+    Mr. Mbambu Lumanisa Bikoni - French teacher
+  </footer>
+
+  <script>
+    const words = [
+      ["bouche", "mouth"], ["nez", "nose"], ["oreille", "ear"], ["œil", "eye"], ["yeux", "eyes"],
+      ["cheveux", "hair"], ["main", "hand"], ["pied", "foot"], ["jambe", "leg"], ["bras", "arm"],
+      ["ventre", "belly"], ["tête", "head"], ["épaule", "shoulder"], ["genoux", "knees"],
+      ["barbe", "beard"], ["moustache", "mustache"], ["visage", "face"], ["malade", "sick"],
+      ["content", "happy"], ["triste", "sad"], ["fatigué", "tired"], ["fâché", "angry"],
+      ["touché", "touched"], ["la banane", "banana"], ["pastèque", "watermelon"], ["fraise", "strawberry"],
+      ["cerise", "cherry"], ["avocat", "avocado"], ["mangue", "mango"], ["sucre", "sugar"],
+      ["sel", "salt"], ["yaourt", "yogurt"], ["frites", "fries"], ["viande", "meat"], ["riz", "rice"],
+      ["salade", "salad"], ["poisson", "fish"], ["fromage", "cheese"], ["gâteau", "cake"],
+      ["jus", "juice"], ["boisson", "drink"], ["verre", "glass"], ["assiette", "plate"],
+      ["cuillère", "spoon"], ["fourchette", "fork"], ["couteau", "knife"], ["sucré", "sweet"],
+      ["salé", "salty"], ["un peu", "a little"], ["beaucoup", "a lot"], ["sans", "without"],
+      ["j’aime", "I like"], ["je n’aime pas", "I don't like"], ["tu préfères", "you prefer"],
+      ["je préfère", "I prefer"], ["pantalon", "pants"], ["tee-shirt", "t-shirt"],
+      ["jupe", "skirt"], ["chemise", "shirt"], ["robe", "dress"], ["chaussette", "sock"],
+      ["chaussure", "shoe"], ["veste", "jacket"], ["short", "shorts"], ["pull", "sweater"],
+      ["casquette", "cap"], ["lunettes", "glasses"], ["chapeau", "hat"], ["baskets", "sneakers"],
+      ["vêtements", "clothing"], ["avion", "plane"], ["bateau", "boat"], ["bus", "bus"],
+      ["train", "train"], ["voiture", "car"], ["vélo", "bicycle"], ["à pied", "on foot"],
+      ["voyage", "trip"], ["soleil", "sun"], ["pleut", "raining"], ["neige", "snow"],
+      ["nuage", "cloud"], ["vent", "wind"], ["chaud", "hot"], ["froid", "cold"]
+    ];
+
+    const container = document.getElementById('words');
+    let currentIndex = 0;
+
+    words.forEach(([fr, en]) => {
+      const div = document.createElement('div');
+      div.className = 'word';
+
+      const frSpan = document.createElement('span');
+      frSpan.className = 'fr';
+      frSpan.textContent = fr;
+
+      const listenButton = document.createElement('button');
+      listenButton.className = 'listen-button';
+      listenButton.textContent = 'Listen';
+      listenButton.onclick = () => {
+        const utterance = new SpeechSynthesisUtterance(fr);
+        utterance.lang = 'fr-FR';
+        speechSynthesis.speak(utterance);
+      };
+
+      const enSpan = document.createElement('span');
+      enSpan.className = 'en';
+      enSpan.textContent = en;
+
+      div.appendChild(frSpan);
+      div.appendChild(listenButton);
+      div.appendChild(enSpan);
+      container.appendChild(div);
+    });
+
+    function playCurrentWord() {
+      const utterance = new SpeechSynthesisUtterance(words[currentIndex][0]);
+      utterance.lang = 'fr-FR';
+      speechSynthesis.speak(utterance);
+    }
+
+    function checkAnswer() {
+      const userInput = document.getElementById("studentInput").value.trim().toLowerCase();
+      const expected = words[currentIndex][0].toLowerCase();
+      const result = userInput === expected ? "Bonne réponse !" : `Mauvaise réponse. Le mot correct est : "${words[currentIndex][0]}"`;
+      document.getElementById("correctionOutput").textContent = result;
+    }
+
+    function nextWord() {
+      currentIndex = (currentIndex + 1) % words.length;
+      document.getElementById("studentInput").value = "";
+      document.getElementById("correctionOutput").textContent = "";
+      playCurrentWord();
+    }
+  </script>
+</body>
+</html>

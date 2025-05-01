@@ -1,1 +1,1 @@
-# mbambu.franch.io
+# IMSE-CMC.FRENCH.io

@@ -1,1 +1,1 @@
-# https://imse-cmc.french.github.io
+# https://french.github.io
